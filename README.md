@@ -1,5 +1,5 @@
-# Howtos
-include codes
+# Python
+#include codes
 import urllib
 
 thisurl = "http://www-rohan.sdsu.edu/~gawron/index.html"
