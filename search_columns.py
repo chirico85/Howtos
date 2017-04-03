@@ -9,6 +9,10 @@ import urllib.request
 from lxml import html
 #import requests
 import re
+from itertools import groupby
+from operator import itemgetter
+import numpy
+from collections import Counter
 #from parse import *
 #from urllib.parse import urlparse
 #from urllib.parse import search
@@ -37,16 +41,46 @@ for i,n in enumerate(data_correct):
 
 
 #%% Find attributes
+listnumbers = []
 top = re.findall("div style.*top:([0-9]+)px.", myfile5)
 left = re.findall("div style.*left:([0-9]+)px.", myfile5)
 titles = []
 for i,n in enumerate(data_correct): 
-    #if (re.findall("([A-Z]{2,}) ([0-9]*)?", data_correct[i])):
-     #if (re.findall("(^[A-Z]{2,}).* ([A-Z]{2,})", data_correct[i])):
-    mo = re.search("(([A-Z]{2,}( [0-9]+)*(.*%)*)(.*[A-Z]+)*)", titles[0]) #works for titles[0]
-        titles.append(n)
+    if re.search("(^([A-Z]{3,}( [0-9]+)*(.*%)*)(.*[A-Z]+)*)",n): 
+        if re.search("([A-Z]{3,}.*) (([A-Z]+))",n):
+            p = re.search("([A-Z]{3,}.*) (([A-Z]+))",n)
+            titles.append(p.group(1))
+            titles.append(p.group(2))
+        else:
+            titles.append(n)       
         
-        
-       # if (re.findall("$[A-Z]{2,}", titles[n])):
-           # titles[n].split
-#top.group() ([0-9]+).*: (.*) ([A-Z]{2,})*
+    
+#%%
+bigdic = {}
+titles_needed = ['RANG','(GEBURTEN [0-9]+)','NAME','STRASSE','ORT']
+s = " ".join(titles)
+for n in titles_needed:
+    if re.search(n,s):
+        p = re.findall(n,s)
+        for m in p:
+            bigdic[m] = 0
+
+orte = []
+for n in data_correct:
+    orte.append(re.findall('^([A-Z][a-z]+)',n))
+     
+def checkforsequence(data):  
+    for n in data:
+        if data_correct[i].isdigit() and data_correct[i+1].isdigit() and data_correct[i+2].isdigit():
+            dif =  abs(data_correct[i] - data_correct[i+1])
+            listnumbers.append(n) 
+                
+listnumbers = []
+for n in data_correct:
+    listnumbers.append(data_correct[n].isdigit())
+
+diffs = []
+for n in range(len(listnumbers)):
+    diffs.append(abs(n-int(listnumbers[n])))
+    
+most_common,num_most_common = Counter(diffs).most_common(1)[0]
